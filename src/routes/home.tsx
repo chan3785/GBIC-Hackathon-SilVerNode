@@ -90,14 +90,6 @@ export default function Home() {
           <Button onClick={()=>onClicked("/governance-vote")}>거버넌스 투표 참여</Button>
           <Button onClick={()=>onClicked("/profile")}>마이 페이지</Button>
       </MainSlider>
-      <KMOOCIntro>
-        <h2>K-MOOC 소개</h2>
-        <p>소개 텍스트...</p>
-      </KMOOCIntro>
-      <Sidebar>
-        <SidebarLink href="#link1">링크1</SidebarLink>
-        <SidebarLink href="#link2">링크2</SidebarLink>
-      </Sidebar>
     </Container>
   );
 }
