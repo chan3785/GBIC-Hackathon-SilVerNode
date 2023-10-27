@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { auth } from '../firebase';
 
@@ -15,8 +15,8 @@ type User = {
 };
 
 const initialUser: User = {
-    name: auth.currentUser?.displayName ? auth.currentUser.displayName : "Anonymous",
-    email: auth.currentUser?.email ? auth.currentUser.email : "Anonymous",
+    name: "홍길동",
+    email:"hong@naver.com",
     courses: [
         { id: 1, title: "React 기초", description: "React 기본 개념과 사용법에 대한 강좌입니다." },
         { id: 2, title: "TypeScript 심화", description: "TypeScript의 고급 기능과 활용 방법에 대해 배웁니다." },
@@ -63,7 +63,27 @@ const CourseItem = styled.li`
 
 const UserProfile: React.FC = () => {
     const [user, setUser] = useState(initialUser);
-
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+          if (user) {
+              setUser({
+                  name: user.displayName || "Anonymous",
+                  email: user.email || "Anonymous",
+                  courses: [
+                      { id: 1, title: "React 기초", description: "React 기본 개념과 사용법에 대한 강좌입니다." },
+                      { id: 2, title: "TypeScript 심화", description: "TypeScript의 고급 기능과 활용 방법에 대해 배웁니다." },
+                  ],
+              });
+          } else {
+              // 사용자가 로그아웃된 경우나 로그인하지 않은 경우의 처리를 여기에 작성
+          }
+      });
+  
+      return () => {
+          // 컴포넌트가 언마운트될 때 구독 해제
+          unsubscribe();
+      };
+  }, []);
     return (
         <Container>
             <ContentWrapper>

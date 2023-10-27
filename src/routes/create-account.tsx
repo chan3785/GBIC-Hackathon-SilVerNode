@@ -40,7 +40,7 @@ export default function CreateAccount() {
       setLoading(true);
       const credentials = await createUserWithEmailAndPassword(auth,email,password);
       await updateProfile(credentials.user, {displayName: name,});
-      navigate("/sign-up");
+      navigate("/sign-up-success");
     } catch (e) {
       if (e instanceof FirebaseError) {
         setError(e.message);

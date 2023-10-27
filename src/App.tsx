@@ -14,6 +14,8 @@ import ProtectedRoute from "./components/protected-route";
 import SignInSuccess from "./components/signup-success";
 import Introduction from "./routes/introduction";
 import GovernanceVote from "./routes/governance-vote";
+import Sugang from "./routes/sugang";
+import CourseDetail from "./routes/course-detail";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,12 +34,24 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "sign-up",
+        path: "sign-up-success",
         element: <SignInSuccess />
       },
       {
         path: "governance-vote",
         element: <GovernanceVote />,
+      },
+      {
+        path: "/introduction",
+        element: <Introduction />
+      },
+      {
+        path: "/sugang",
+        element: <Sugang />
+      },
+      {
+        path: "/course-detail",
+        element: <CourseDetail />
       },
     ],
   },
@@ -49,10 +63,7 @@ const router = createBrowserRouter([
     path: "/create-account",
     element: <CreateAccount />,
   },
-  {
-    path: "/introduction",
-    element: <Introduction />
-  },
+
 ]);
 const GlobalStyles = createGlobalStyle`
   ${reset};

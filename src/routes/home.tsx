@@ -7,13 +7,15 @@ export const Button = styled.button`
   display: flex;
   justify-content: flex-start;
   padding: 20px 20px;
-  background-color: purple;
+  background-color: green;
 `;  
 
 export const Container = styled.div`
   font-family: Arial, sans-serif;
   width: 100%;
   height: 100%;
+  background-color: white;
+  color: black;
 `;
 
 export const Header = styled.div`
@@ -21,7 +23,7 @@ export const Header = styled.div`
   align-items: flex-start;  // 세로축 시작점(위쪽)에 정렬
   justify-content: flex-start;  // 가로축 시작점(왼쪽)에 정렬
   padding: 20px;
-  background-color: black;
+  background-color: #c43131;
   flex-direction: row;  
 `;
 export const SvgWrapper = styled.svg`
@@ -86,8 +88,8 @@ export default function Home() {
         <SliderImage>
           <Button onClick={()=>onClicked("/introduction")}>DAO college 소개</Button>
         </SliderImage> 
-          <Button onClick={()=>onClicked("/")}>egg state</Button>
-          <Button onClick={()=>onClicked("/governance-vote")}>거버넌스 투표 참여</Button>
+        <Button onClick={()=>onClicked("/governance-vote")}>개설 강의 제안</Button>
+          <Button onClick={()=>onClicked("/sugang")}>수강신청</Button>
           <Button onClick={()=>onClicked("/profile")}>마이 페이지</Button>
       </MainSlider>
     </Container>
