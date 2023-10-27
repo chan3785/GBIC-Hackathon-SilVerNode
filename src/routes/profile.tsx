@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { auth } from '../firebase';
 
 type Course = {
     id: number;
@@ -14,8 +15,8 @@ type User = {
 };
 
 const initialUser: User = {
-    name: "홍길동",
-    email: "hong@example.com",
+    name: auth.currentUser?.displayName ? auth.currentUser.displayName : "Anonymous",
+    email: auth.currentUser?.email ? auth.currentUser.email : "Anonymous",
     courses: [
         { id: 1, title: "React 기초", description: "React 기본 개념과 사용법에 대한 강좌입니다." },
         { id: 2, title: "TypeScript 심화", description: "TypeScript의 고급 기능과 활용 방법에 대해 배웁니다." },
