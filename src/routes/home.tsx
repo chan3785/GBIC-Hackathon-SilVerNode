@@ -1,9 +1,11 @@
 import { ethers } from "ethers";
-import { init, useConnectWallet } from "@web3-onboard/react";
-import injectedModule from "@web3-onboard/injected-wallets";
+
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import MyTokenABI from "../ABI/MyTokenABI";
+
+import { init, useConnectWallet } from "@web3-onboard/react";
+import injectedModule from "@web3-onboard/injected-wallets";
   // 1. 지갑 모듈
 export const wallets = [injectedModule()];
 
@@ -95,6 +97,7 @@ export default function Home() {
   }
   const logOut = () => {
     auth.signOut();
+    navigate("/login")
   };
   return (
     <div className="font-sans w-full h-full bg-white text-black">

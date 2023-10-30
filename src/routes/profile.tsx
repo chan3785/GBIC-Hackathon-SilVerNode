@@ -35,8 +35,7 @@ const UserProfile: React.FC = () => {
                     name: user.displayName || "Anonymous",
                     email: user.email || "Anonymous",
                     courses: [
-                        { id: 1, title: "React 기초", description: "React 기본 개념과 사용법에 대한 강좌입니다." },
-                        { id: 2, title: "TypeScript 심화", description: "TypeScript의 고급 기능과 활용 방법에 대해 배웁니다." },
+                        { id: 1, title: "블록체인 개론", description: "블록체인 개론 강의에서 블록체인의 기본 원리부터 현대 산업에 미치는 영향까지 짚어보며, 미래 디지털 경제의 핵심에 대해 학습한다." },
                     ],
                 });
             } else {

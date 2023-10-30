@@ -21,7 +21,7 @@ type Proposal = {
 
 
 const proposalsInitial: Proposal[] = [
-    { id: 1, title: '블록체인 개론', description: '블록체인 개론을 통해 블록체인 기술에 대해 학습합니다.', comments: [], votes: 0 },  // Add votes: 0
+    { id: 1, title: '산스크리트어 강의', description: '공학의 성지 인도에서 공부하기 위해 산스크리트어 학습', comments: [], votes: 0 },  // Add votes: 0
 ];
 
 
@@ -35,6 +35,7 @@ const VotePage: React.FC = () => {
     const [newProposalDescription, setNewProposalDescription] = useState('');
     const [showAddProposal, setShowAddProposal] = useState(false);
     const [comments, setComments] = useState<{[key: number]: string}>({});  // 각 제안에 대한 댓글 상태 관리
+    const [newVotes, setNewVotes] = useState(0);
 
     // 여기서 사용자 정보를 받아와야 합니다. 현재는 임시로 "User123"으로 설정해두었습니다.
     const currentUser = auth.currentUser;
@@ -64,7 +65,8 @@ const VotePage: React.FC = () => {
             id: proposals.length + 1,
             title: newProposalTitle,
             description: newProposalDescription,
-            comments: []
+            comments: [],
+            votes: newVotes,
         };
         const CID = await upload(newProposalTitle, newProposalDescription);
         await resisterProposal(CID);
@@ -79,6 +81,7 @@ const VotePage: React.FC = () => {
         setShowAddProposal(false);
         setNewProposalTitle('');
         setNewProposalDescription('');
+        setNewVotes(0);
     };
 
     const handleAddComment = (proposalId: number) => {
@@ -172,7 +175,7 @@ const VotePage: React.FC = () => {
         const votes = await proposalContract.vote(num);
         votes.wait();
       }
-    const ProposalCA = "0x4926EcdaAe8459EE617259f9F10a995132F0f072";
+    const ProposalCA = "0x6aE3424Fec66a9b2DC2a0ced3320077f2f3cDe49";
     const upload = async (name:string, description:string) => {
     
         // 2. 받아온 주소로 메타데이터 설정.
@@ -189,37 +192,38 @@ const VotePage: React.FC = () => {
         //mint(`https://gateway.pinata.cloud/ipfs/${jsonResult.IpfsHash}`); 
         return jsonResult.IpfsHash; 
       };
-    return (
-        <div className="p-5 bg-white w-full h-full m-auto text-black"> {/* 배경색을 흰색으로 변경 */}
-        <div className="sticky top-0 z-10 bg-white p-2 border-b"> {/* 고정되는 부분에 sticky 적용 */}
-            <h1 className="text-2xl font-bold mb-4">개설희망 강의 투표</h1>
-            {showAddProposal ? (
-                <div>
-                    <input
-                        className="border p-2 rounded w-full mb-2"
-                        placeholder="제목"
-                        value={newProposalTitle}
-                        onChange={(e) => setNewProposalTitle(e.target.value)}
-                    />
-                    <textarea
-                        className="border p-2 rounded w-full mb-2 resize-y min-h-[50px] max-h-[150px]"
-                        placeholder="내용"
-                        value={newProposalDescription}
-                        onChange={(e) => setNewProposalDescription(e.target.value)}
-                    ></textarea>
-                    <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer" onClick={handleAddProposal}>제안하기</button>
-                </div>
-            ) : (
-                <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-4" onClick={() => setShowAddProposal(true)}>개설 강의 제안하기</button>
-            )}
-        </div>
-        <ul className="list-decimal pl-5">
-    {proposals.map((proposal) => (
-        <li key={proposal.id} className="mb-5 p-4 bg-white border rounded shadow">
-            <h2 className="text-xl mb-2">{proposal.title}</h2>
-            <p className="mb-2">{proposal.description}</p>
-            <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-2 mr-2" onClick={() => handleVote(proposal.id)}>투표하기</button>
-            <span>현재 득표수: {proposal.votes}표</span>  {/* Display vote count here */}
+      return (
+        <div className="p-5 bg-white w-full min-h-screen m-auto text-black">
+            <div className="sticky top-0 z-10 bg-white p-2 border-b">
+                <h1 className="text-2xl font-bold mb-4">개설희망 강의 제안</h1>
+                {showAddProposal ? (
+                    <div>
+                        <input
+                            className="border p-2 rounded w-full mb-2"
+                            placeholder="제목"
+                            value={newProposalTitle}
+                            onChange={(e) => setNewProposalTitle(e.target.value)}
+                        />
+                        <textarea
+                            className="border p-2 rounded w-full mb-2 resize-y min-h-[50px] max-h-[150px]"
+                            placeholder="내용"
+                            value={newProposalDescription}
+                            onChange={(e) => setNewProposalDescription(e.target.value)}
+                        ></textarea>
+                        <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer" onClick={handleAddProposal}>제안하기</button>
+                    </div>
+                ) : (
+                    <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-4" onClick={() => setShowAddProposal(true)}>개설 강의 제안하기</button>
+                )}
+            </div>
+            <h2 className="text-xl font-bold mt-4 mb-2">제안 강의 목록</h2> {/* 추가된 부분 */}
+            <ul className="list-decimal pl-5">
+                {proposals.map((proposal) => (
+                    <li key={proposal.id} className="mb-5 p-4 bg-white border rounded shadow">
+                        <h2 className="text-xl mb-2">{proposal.title}</h2>
+                        <p className="mb-2">{proposal.description}</p>
+                        <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-2 mr-2" onClick={() => handleVote(proposal.id)}>투표하기</button>
+                        <span>현재 득표수: {proposal.votes}표</span>
                         <textarea
                             className="border p-2 rounded w-full mb-2 resize-y min-h-[50px] max-h-[150px]"
                             placeholder="댓글 입력하기"
@@ -236,7 +240,7 @@ const VotePage: React.FC = () => {
                 ))}
             </ul>
         </div>
-    );
+    );    
 };
 
 export default VotePage;
