@@ -1,17 +1,9 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { auth } from "../firebase";
-
 import { Link, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
-import {
-  Form,
-  Error,
-  Input,
-  Switcher,
-  Title,
-  Wrapper,
-} from "../components/auth-components";
+import "../index.css"
 
 export default function CreateAccount() {
   const navigate = useNavigate();
@@ -50,42 +42,51 @@ export default function CreateAccount() {
     }
   };
   return (
-    <Wrapper>
-      <Title>Sign Up</Title>
-      <Form onSubmit={onSubmit}>
-        <Input
-          onChange={onChange}
-          name="name"
-          value={name}
-          placeholder="Name"
-          type="text"
-          required
-        />
-        <Input
-          onChange={onChange}
-          name="email"
-          value={email}
-          placeholder="Email"
-          type="email"
-          required
-        />
-        <Input
-          onChange={onChange}
-          value={password}
-          name="password"
-          placeholder="Password"
-          type="password"
-          required
-        />
-        <Input
-          type="submit"
-          value={isLoading ? "Loading..." : "Create Account"}
-        />
-      </Form>
-      {error !== "" ? <Error>{error}</Error> : null}
-      <Switcher>
-        Already have an account? <Link to="/login">Log in &rarr;</Link>
-      </Switcher>
-    </Wrapper>
+    <div className="w-full h-full bg-white text-black min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md p-8 border border-gray-300 rounded-lg">
+        <h1 className="text-4xl font-bold mb-4">Sign Up</h1>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <input
+            onChange={onChange}
+            name="name"
+            value={name}
+            placeholder="Name"
+            type="text"
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            onChange={onChange}
+            name="email"
+            value={email}
+            placeholder="Email"
+            type="email"
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            onChange={onChange}
+            value={password}
+            name="password"
+            placeholder="Password"
+            type="password"
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="submit"
+            value={isLoading ? "Loading..." : "Create Account"}
+            className="w-full p-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600"
+          />
+        </form>
+        {error !== "" ? <div className="text-red-500 mt-4">{error}</div> : null}
+        <div className="mt-4">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-500 hover:underline">
+            Log in &rarr;
+          </Link>
+        </div>
+      </div>
+    </div>
   );
-}
+} 

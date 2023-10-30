@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 // 강의 개설 컨트랙트: 교원 다이렉트 개설 + 제안에 대한 분반 강의 개설
 

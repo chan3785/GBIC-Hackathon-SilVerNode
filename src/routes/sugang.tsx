@@ -1,8 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import "../index.css"
+import { useState, useEffect } from 'react';
 
 export default function Sugang() {
-    
+  const [showModal, setShowModal] = useState(false); // 모달 표시 여부
+  const [inputValue, setInputValue] = useState(0); // 사용자가 입력한 값 (2번)
+  const [totalValue, setTotalValue] = useState(0); // 합계 값 (3번)
+
+  const fixedValue = 1; // 1번 고정값
+
+  // inputValue가 변경될 때마다 totalValue를 업데이트
+  useEffect(() => {
+      setTotalValue(fixedValue + Number(inputValue));
+  }, [inputValue]);
+
     const navigate = useNavigate();
     const onClicked = (address: string) => {
         navigate(address);
@@ -27,14 +38,61 @@ export default function Sugang() {
             <div className="flex flex-col items-center mt-5">
                 <div className="bg-gray-200 p-4 rounded w-7/12 mb-4 relative shadow-md">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg text-blue-500 cursor-pointer" onClick={() => onClicked("/course-detail")}>강의 제목 예시</h2>
-                        <span className="text-sm text-gray-500 ml-4">교수자 이름</span>
+                        <h2 className="text-lg text-blue-500 cursor-pointer" onClick={() => onClicked("/course-detail")}>블록체인 개론</h2>
+                        <span className="text-sm text-gray-500 ml-4">강의자: 이한길</span>
                     </div>
-                    <p className="text-sm mb-4">이곳에 강의에 대한 간단한 설명을 작성하세요.</p>
-                    <button className="bg-green-500 text-white py-1 px-4 rounded absolute bottom-4 right-5 hover:bg-green-600 transition duration-300">신청하기</button>
+                    <p className="text-sm mb-4">블록체인 개론 강의에서 블록체인의 기본 원리부터 현대 산업에 미치는 영향까지 짚어보며, 미래 디지털 경제의 핵심에 대해 학습한다.</p>
+                    <button 
+    className="bg-green-500 text-white py-2 px-4 rounded absolute bottom-4 right-5 hover:bg-green-600 transition duration-300"
+    onClick={() => {
+        setInputValue(0); // 추가 수업료 초기화
+        setShowModal(true);
+    }}
+>
+    신청하기
+</button>
                 </div>
                 {/* 추가적인 강의 항목들을 이곳에 추가하면 됩니다. */}
             </div>
+            {showModal && (
+                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg">
+                    <div className="mb-4">
+    <label className="block mb-2">기본 수업료:</label>
+    <div className="flex items-center">
+        <input type="text" readOnly value={fixedValue} className="border rounded p-2 w-full"/>
+        <span className="ml-2">토큰(token)</span>
+    </div>
+</div>
+<div className="mb-4">
+    <label className="block mb-2">추가 수업료:</label>
+    <div className="flex items-center">
+        <input type="number" value={inputValue} onChange={(e) => setInputValue(e.target.value)} className="border rounded p-2 w-full"/>
+        <span className="ml-2">토큰(token)</span>
+    </div>
+</div>
+<div className="mb-4">
+    <label className="block mb-2">총 수업료:</label>
+    <div className="flex items-center">
+        <input type="text" readOnly value={totalValue} className="border rounded p-2 w-full"/>
+        <span className="ml-2">토큰(token)</span>
+    </div>
+</div>
+<button 
+    className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+    onClick={() => {
+        // 알림 표시
+        window.alert("신청 되었습니다!");
+        // 모달 창 닫기
+        setShowModal(false);
+    }}
+>
+    신청하기
+                  </button>
+                        <button className="ml-2 text-gray-500" onClick={() => setShowModal(false)}>닫기</button>
+                  </div>
+              </div>
+            )}
         </div>
     );
 }

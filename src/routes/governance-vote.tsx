@@ -1,9 +1,11 @@
+import { ethers } from "ethers";
+import { useConnectWallet } from "@web3-onboard/react";
+import {pinJSONToIPFS} from "./pinata";
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { auth, database } from '../firebase';
 import { doc, setDoc, addDoc, collection, getDocs, query } from 'firebase/firestore';
-
-
+import "../index.css"
+import ProposalABI from "../ABI/ProposalABI";
 type Comment = {
     userId: string; // 사용자 ID
     text: string;
@@ -14,64 +16,18 @@ type Proposal = {
     title: string;
     description: string;
     comments: Comment[];
+    votes: number;  // Add this line
 };
 
+
 const proposalsInitial: Proposal[] = [
-    { id: 1, title: 'Proposal 1', description: 'Description for proposal 1', comments: [] },
-    { id: 2, title: 'Proposal 2', description: 'Description for proposal 2', comments: [] },
+    { id: 1, title: '블록체인 개론', description: '블록체인 개론을 통해 블록체인 기술에 대해 학습합니다.', comments: [], votes: 0 },  // Add votes: 0
 ];
 
-const Container = styled.div`
-    padding: 20px;
-    background-color: #f5f5f5;
-    width: 100%;
-    margin: 0 auto;
-    color: black;
-`;
 
-const ProposalList = styled.ul`
-    list-style: none;
-    padding: 0;
-    color: black;
-`;
 
-const ProposalItem = styled.li`
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-`;
 
-const CommentList = styled.ul`
-    list-style: none;
-    padding-left: 0;
-`;
 
-const CommentTextArea = styled.textarea`
-    width: 100%;
-    resize: vertical;         // 수직으로만 크기 조절
-    min-height: 50px;
-    max-height: 150px;
-`;
-
-const CommentItem = styled.li`
-    margin-bottom: 5px;
-    word-break: break-word;   // 긴 단어나 URL에 대한 줄바꿈
-`;
-
-const Button = styled.button`
-    padding: 10px 20px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-        background-color: #0056b3;
-    }
-`;
 
 const VotePage: React.FC = () => {
     const [proposals, setProposals] = useState(proposalsInitial);
@@ -82,11 +38,26 @@ const VotePage: React.FC = () => {
 
     // 여기서 사용자 정보를 받아와야 합니다. 현재는 임시로 "User123"으로 설정해두었습니다.
     const currentUser = auth.currentUser;
+    const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+  let ethersProvider;
+    if (wallet) {
+        ethersProvider = new ethers.providers.Web3Provider(wallet.provider, "any"); //ethers.BrowserProvider in v6
+      }
 
-    const handleVote = (proposalId: number) => {
+      const handleVote = async (proposalId: number) => {
         // TODO: Implement actual voting logic
-        console.log(`Voted for proposal: ${proposalId}`);
+        await vote(proposalId);
+    
+        // Increase the vote count for the proposal
+        const updatedProposals = proposals.map(p =>
+            p.id === proposalId
+                ? { ...p, votes: p.votes + 1 }
+                : p
+        );
+    
+        setProposals(updatedProposals);
     };
+    
 
     const handleAddProposal = async () => {
         const newProposal = {
@@ -95,6 +66,8 @@ const VotePage: React.FC = () => {
             description: newProposalDescription,
             comments: []
         };
+        const CID = await upload(newProposalTitle, newProposalDescription);
+        await resisterProposal(CID);
 
         try {
             await setDoc(doc(database, "proposals", newProposal.id.toString()), newProposal);
@@ -189,47 +162,80 @@ const VotePage: React.FC = () => {
         loadCommentsFromFirestore();
     }, []);
 
+    const resisterProposal = async (CID:string) => {
+        const proposalContract = new ethers.Contract(ProposalCA, ProposalABI, ethersProvider.getSigner());
+        const resister = await proposalContract.resisterProposal(CID);
+        resister.wait();
+      }
+      const vote = async (num:uint32) => {
+        const proposalContract = new ethers.Contract(ProposalCA, ProposalABI, ethersProvider.getSigner());
+        const votes = await proposalContract.vote(num);
+        votes.wait();
+      }
+    const ProposalCA = "0x4926EcdaAe8459EE617259f9F10a995132F0f072";
+    const upload = async (name:string, description:string) => {
+    
+        // 2. 받아온 주소로 메타데이터 설정.
+        const metadata = {                          
+          name:  `${name}$` ,              // 제안 제목
+          description: `${description}$`,  // 제안 설명
+          attributes: [],
+        };
+    
+        // 3. 메타데이터(file in IPFS, 이름, 설명)를 IPFS에 올려서 주소 받아오기.
+        const jsonResult = await pinJSONToIPFS(metadata);  
+    
+        // 4. 받아온 주소로 nft 발행하기.
+        //mint(`https://gateway.pinata.cloud/ipfs/${jsonResult.IpfsHash}`); 
+        return jsonResult.IpfsHash; 
+      };
     return (
-        <Container>
-            <h1>Vote Using Your Governance Token</h1>
+        <div className="p-5 bg-white w-full h-full m-auto text-black"> {/* 배경색을 흰색으로 변경 */}
+        <div className="sticky top-0 z-10 bg-white p-2 border-b"> {/* 고정되는 부분에 sticky 적용 */}
+            <h1 className="text-2xl font-bold mb-4">개설희망 강의 투표</h1>
             {showAddProposal ? (
                 <div>
-                    <input 
-                        placeholder="Proposal Title" 
-                        value={newProposalTitle} 
-                        onChange={(e) => setNewProposalTitle(e.target.value)} 
+                    <input
+                        className="border p-2 rounded w-full mb-2"
+                        placeholder="제목"
+                        value={newProposalTitle}
+                        onChange={(e) => setNewProposalTitle(e.target.value)}
                     />
-                    <textarea 
-                        placeholder="Proposal Description" 
-                        value={newProposalDescription} 
+                    <textarea
+                        className="border p-2 rounded w-full mb-2 resize-y min-h-[50px] max-h-[150px]"
+                        placeholder="내용"
+                        value={newProposalDescription}
                         onChange={(e) => setNewProposalDescription(e.target.value)}
                     ></textarea>
-                    <Button onClick={handleAddProposal}>Submit Proposal</Button>
+                    <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer" onClick={handleAddProposal}>제안하기</button>
                 </div>
             ) : (
-                <Button onClick={() => setShowAddProposal(true)}>Add New Proposal</Button>
+                <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-4" onClick={() => setShowAddProposal(true)}>개설 강의 제안하기</button>
             )}
-            <ProposalList>
-                {proposals.map((proposal) => (
-                    <ProposalItem key={proposal.id}>
-                        <h2>{proposal.title}</h2>
-                        <p>{proposal.description}</p>
-                        <Button onClick={() => handleVote(proposal.id)}>Vote</Button>
-                        <CommentTextArea 
-                            placeholder="Add comment"
+        </div>
+        <ul className="list-decimal pl-5">
+    {proposals.map((proposal) => (
+        <li key={proposal.id} className="mb-5 p-4 bg-white border rounded shadow">
+            <h2 className="text-xl mb-2">{proposal.title}</h2>
+            <p className="mb-2">{proposal.description}</p>
+            <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-2 mr-2" onClick={() => handleVote(proposal.id)}>투표하기</button>
+            <span>현재 득표수: {proposal.votes}표</span>  {/* Display vote count here */}
+                        <textarea
+                            className="border p-2 rounded w-full mb-2 resize-y min-h-[50px] max-h-[150px]"
+                            placeholder="댓글 입력하기"
                             value={comments[proposal.id] || ''}
                             onChange={(e) => setComments({...comments, [proposal.id]: e.target.value})}
                         />
-                        <Button onClick={() => handleAddComment(proposal.id)}>Add Comment</Button>
-                        <CommentList>
+                        <button className="bg-blue-500 text-white rounded px-5 py-2 hover:bg-blue-700 cursor-pointer mb-2" onClick={() => handleAddComment(proposal.id)}>댓글 달기</button>
+                        <ul className="list-decimal pl-5">
                             {proposal.comments.map((c, index) => (
-                                <CommentItem key={index}>{c.userId}: {c.text}</CommentItem>
+                                <li key={index} className="mb-1 break-words">{c.userId}: {c.text}</li>
                             ))}
-                        </CommentList>
-                    </ProposalItem>
+                        </ul>
+                    </li>
                 ))}
-            </ProposalList>
-        </Container>
+            </ul>
+        </div>
     );
 };
 

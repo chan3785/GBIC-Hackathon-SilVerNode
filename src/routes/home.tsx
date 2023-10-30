@@ -3,9 +3,9 @@ import { init, useConnectWallet } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
-
-// 1. 지갑 모듈
-const wallets = [injectedModule()];
+import MyTokenABI from "../ABI/MyTokenABI";
+  // 1. 지갑 모듈
+export const wallets = [injectedModule()];
 
 // 2. 블록체인 네트워크
 const chains = [
@@ -74,14 +74,12 @@ init({
   appMetadata,
 });
 
-
 export default function Home() {
   // 지갑 훅
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
 
-  //const UtilToken_CA = "0x56Ad0b54F72AC30f5554b3959bea4552f6e41C28";
-  const ERC721_CA = "0x3965bb49281dA7080d22e4468e7999251Fd7b9c0";
-
+  // CA
+  const MyTokenCA = "0xAFb02DfaCd7FB0ec4D7172690DedeC5b663e6155";
 
   // 지갑 연결
   // 이더스 프로바이더: create an ethers provider
@@ -89,7 +87,6 @@ export default function Home() {
   if (wallet) {
     ethersProvider = new ethers.providers.Web3Provider(wallet.provider, "any"); //ethers.BrowserProvider in v6
   }
-
 
 
   const navigate = useNavigate();
@@ -122,12 +119,9 @@ export default function Home() {
           Log Out
         </button>
         <div>
-        <button disabled={connecting} onClick={() => (wallet ? disconnect(wallet) : connect())}>
+        <button className="flex items-center justify-start px-5 py-3 bg-teal-300 hover:bg-gray-100  focus:outline-none focus:bg-gray-100"
+        disabled={connecting} onClick={() => (wallet ? disconnect(wallet) : connect())}>
           {connecting ? "connecting" : wallet ? "지갑 연결 해제" : "지갑 연결"}
-        </button>
-
-        <button disabled={!wallet} >
-          NFT Mint
         </button>
 
         

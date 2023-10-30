@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 // 강의 제안 컨트랙트: 학생이 개설을 희망하는 강의를 제안해 투표 올리는 컨트랙트.
 
